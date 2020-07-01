@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <zoom_level>10</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>410</x>
+      <y>60</y>
+      <w>240</w>
+      <h>480</h>
+    </coordinates>
+    <panel_attributes>SDLSprite
+--
+-mSpriteName : string
+-mXCoord : int
+-mYCoord : int
+-mHeight : int
+-mWidth : int
+-mScale : double
+-mRotationInDegrees : double
+--
++SDLSprite(string, int, int)
++~SDLSprite();
+
++getName() const : string
+
+/+draw()const : void/
+
++getX() const : int
++setX(int) : void
++getY() const : int
++setY(int) : void
+
++getWidth() const : int
++getHeight() const : int
+
++setScale(double) : void
++setRotation(double) : void
++getRotation() const : int
+
++clicked(int, int) : bool</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>270</x>
+      <y>570</y>
+      <w>370</w>
+      <h>110</h>
+    </coordinates>
+    <panel_attributes>SDLMovingSprite
+--
+#mcDirection : Direction2D
+--
++SDLMovingSprite(string, int, int, Direction2D)
+
++update() : void
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>720</x>
+      <y>600</y>
+      <w>170</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>Direction2D
+--
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>630</x>
+      <y>620</y>
+      <w>110</w>
+      <h>30</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;&lt;&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;90.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>430</x>
+      <y>530</y>
+      <w>110</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>90.0;10.0;10.0;40.0</additional_attributes>
+  </element>
+</diagram>
