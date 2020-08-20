@@ -9,7 +9,7 @@
 
 #pragma once
 #include <SDLManager.h>
-#include "Player.h"
+#include "Network.h"
 #include "Obstacle.h"
 #include <vector>
 #include "MovingBackground.h"
@@ -17,7 +17,7 @@
 class Game {
 public:
 
-	Game(int windowW, int bestScore);
+	Game(int windowW, int bestScore, Network* network);
 	~Game();
 	void handleEvents(SDLManager &manager, SDL_Event event);
 	void update(SDLManager &manager);
@@ -37,8 +37,7 @@ private:
 	bool mbIsRunning;
 	bool mbIsPaused;
 	bool mbGameOver;
-	Player mcPlayer[50];
-	int mNumPlayers = 50;
+	Network* pmcNetwork;
 	std::vector<Obstacle*> mvpcObstacles;
 
 	//Background sprites

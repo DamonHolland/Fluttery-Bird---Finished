@@ -11,6 +11,7 @@
 #include "SDLManager.h"
 #include "Game.h"
 #include <ctime>
+#include "Network.h"
 
 
 /******************************************************************************
@@ -64,6 +65,9 @@ int main (int argc, char *argv[])
 	cIntro.draw();
 	rcManager.render();
 
+	//Create the Neural Network Object
+	Network cTheNetwork(20);
+
 	while (!bGameStarted) {
 
 		if (rcManager.getSDLEvent(uEvent))
@@ -92,7 +96,7 @@ int main (int argc, char *argv[])
 	while (rcManager.animationIsRunning())
 	{
 		//Create new game object
-		pcGame = new Game(rcManager.windowWidth(), bestScore);
+		pcGame = new Game(rcManager.windowWidth(), bestScore, &cTheNetwork);
 
 		//Game loop for current game object
 		while (pcGame->isRunning() && rcManager.animationIsRunning()) {
@@ -114,6 +118,8 @@ int main (int argc, char *argv[])
 
 		//Delete game object
 		delete pcGame;
+		//Create a new generation of birds
+		cTheNetwork.createNewGeneration();
 
 	}
 

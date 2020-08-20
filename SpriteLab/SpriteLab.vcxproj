@@ -127,6 +127,7 @@
     <ClCompile Include="driver.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="MovingBackground.cpp" />
+    <ClCompile Include="Network.cpp" />
     <ClCompile Include="Obstacle.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="TopObstacle.cpp" />
@@ -135,6 +136,7 @@
     <ClInclude Include="BottomObstacle.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="MovingBackground.h" />
+    <ClInclude Include="Network.h" />
     <ClInclude Include="Obstacle.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="TopObstacle.h" />

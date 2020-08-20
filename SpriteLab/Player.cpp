@@ -25,7 +25,7 @@ const double Player::GRAVITY = 0.5;
 ******************************************************************************/
 Player::Player() : SDLSprite(IMAGE_PATH, X_START, Y_START){
 	//Initial Velocity
-	mYVel = rand() % 10 - 5;
+	mYVel = 0;
 }
 
 /******************************************************************************
@@ -38,6 +38,8 @@ Player::Player() : SDLSprite(IMAGE_PATH, X_START, Y_START){
 * Returned:    none
 ******************************************************************************/
 void Player::update() {
+	//-------------------Neural Network-----------------------
+
 
 	//Update position based on Y velocity
 	setY(getY() + static_cast<int>(mYVel));
