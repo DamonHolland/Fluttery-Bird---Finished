@@ -26,7 +26,7 @@ Game::Game(int windowW, int bestScore) {
 	mWindowWidth = windowW;
 	mBestScore = bestScore;
 	mbIsRunning = true;
-	mbIsPaused = true;
+	mbIsPaused = false;
 	mbGameOver = false;
 	mbNewHighScore = false;
 	mvpcObstacles.clear();
@@ -90,38 +90,7 @@ void Game::handleEvents(SDLManager &manager, SDL_Event event) {
 		}
 
 	//While Player has not lost
-	if (!mbGameOver) {
-
-		//Key Press Events
-		if (event.type == SDL_KEYDOWN) {
-
-			//Player Fly
-			if (event.key.keysym.sym == SDLK_SPACE && event.key.repeat == 0) {
-				if (mbIsPaused) {
-					mbIsPaused = false;
-				}
-				mcPlayer.fly();
-				manager.playSound("assets/fly.wav", false);
-			}
-
-		}
-
-		//Mouse Click Events
-		if (event.type == SDL_MOUSEBUTTONDOWN) {
-
-			//Player Fly
-			if (event.button.button == SDL_BUTTON_LEFT && event.key.repeat == 0) {
-				if (mbIsPaused) {
-					mbIsPaused = false;
-				}
-				mcPlayer.fly();
-				manager.playSound("assets/fly.wav", false);
-			}
-
-		}
-
-	}
-	else {
+	if (mbGameOver) {
 		if (event.type == SDL_MOUSEBUTTONDOWN) {
 
 			//Menu Button Pressed
@@ -133,7 +102,6 @@ void Game::handleEvents(SDLManager &manager, SDL_Event event) {
 			}
 		}
 	}
-
 
 	return;
 }
@@ -156,8 +124,11 @@ void Game::update(SDLManager &manager) {
 		mpcBackground2->update();
 
 		//Update Game Objects
-		mcPlayer.update();
-
+		for(int i = 0; i < mNumPlayers;i++)
+		{
+			mcPlayer[i].update();
+		}
+		
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
 			mvpcObstacles.at(i)->update();
 		}
@@ -183,25 +154,38 @@ void Game::update(SDLManager &manager) {
 		}
 
 		//Quit Game If Player Hits Ground
-		if (mcPlayer.touchingGround(manager.windowHeight())) {
+		bool bAllPlayersHit = true;
+		for (int i = 0; i < mNumPlayers; i++)
+		{
+			if (!mcPlayer[i].touchingGround(manager.windowHeight()))
+			{
+				bAllPlayersHit = false;
+			}
+		}
+
+		//Quit Game if Player Hits Obstacle
+		for (int i = 0; i < mNumPlayers; i++)
+		{
+			for (size_t j = 0; j < mvpcObstacles.size(); j++) {
+				if (mcPlayer[i].isTouching(mvpcObstacles.at(j))) {
+					bAllPlayersHit = false;
+				}
+			}
+		}
+
+		//Quit if either tests were true
+		if (bAllPlayersHit)
+		{
 			manager.playSound("assets/die.wav", false);
 			mbGameOver = true;
 			mbIsPaused = true;
 		}
 
-		//Quit Game if Player Hits Obstacle
-		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
-			if (mcPlayer.isTouching(mvpcObstacles.at(i))) {
-				manager.playSound("assets/die.wav", false);
-				mbGameOver = true;
-				mbIsPaused = true;
-			}
-		}
-
 		//Check for score increase
+		//ONLY CHECKS FIRST BIRD, CHANGE LATER
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
-			if ((mvpcObstacles.at(i))->isPassed((mcPlayer.getX() +
-					(mcPlayer.getWidth() / 2))) &&
+			if ((mvpcObstacles.at(i))->isPassed((mcPlayer[0].getX() +
+					(mcPlayer[0].getWidth() / 2))) &&
 				dynamic_cast<TopObstacle*>(mvpcObstacles.at(i)) != NULL) {
 				mScore++;
 				manager.playSound("assets/score.wav", false);
@@ -212,7 +196,10 @@ void Game::update(SDLManager &manager) {
 	}
 	else if (mbGameOver) {
 		//Player will fall off of screen if they lose
-		mcPlayer.update();
+		for (int i = 0; i < mNumPlayers; i++)
+		{
+			mcPlayer[i].update();
+		}
 	}
 
 	return;
@@ -249,7 +236,10 @@ void Game::render(SDLManager &manager) {
 		mvpcObstacles.at(i)->render();
 	}
 
-	mcPlayer.render();
+	for (int i = 0; i < mNumPlayers; i++)
+	{
+		mcPlayer[i].render();
+	}
 
 	//Render Score
 	manager.displayText(480, 0, std::to_string(mScore), Color::WHITE, 2);

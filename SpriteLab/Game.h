@@ -37,7 +37,8 @@ private:
 	bool mbIsRunning;
 	bool mbIsPaused;
 	bool mbGameOver;
-	Player mcPlayer;
+	Player mcPlayer[50];
+	int mNumPlayers = 50;
 	std::vector<Obstacle*> mvpcObstacles;
 
 	//Background sprites

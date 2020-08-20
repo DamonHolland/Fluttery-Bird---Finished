@@ -25,7 +25,7 @@ const double Player::GRAVITY = 0.5;
 ******************************************************************************/
 Player::Player() : SDLSprite(IMAGE_PATH, X_START, Y_START){
 	//Initial Velocity
-	mYVel = 0;
+	mYVel = rand() % 10 - 5;
 }
 
 /******************************************************************************
@@ -45,7 +45,7 @@ void Player::update() {
 	//Rotate Sprite based on Y velocity
 	setRotation(getRotation() + mYVel / COLLISION_LEEWAY);
 
-	//Readjust for maximum ratation bounds
+	//Readjust for maximum rotation bounds
 	if (mYVel >= 0) {
 		if (getRotation() >= MAX_FALL_ROTATION) {
 			setRotation(MAX_FALL_ROTATION);
