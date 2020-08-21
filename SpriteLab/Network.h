@@ -16,7 +16,7 @@ public:
 	void update(double px, double pmy);
 	int getSize();
 	int getGeneration();
-	Player getBird(int i);
+	Player* getBird(int i);
 	void createNewGeneration();
 	void removeBird(int i);
 

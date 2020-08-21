@@ -158,9 +158,9 @@ void Game::update(SDLManager &manager) {
 		//Quit Game If Player Hits Ground
 		for (int i = 0; i < pmcNetwork->getSize(); i++)
 		{
-			if (pmcNetwork->getBird(i).touchingGround(manager.windowHeight()))
+			if (pmcNetwork->getBird(i)->touchingGround(manager.windowHeight()))
 			{
-					pmcNetwork->getBird(i).setScore(mScore);
+					pmcNetwork->getBird(i)->setScore(mScore);
 					pmcNetwork->removeBird(i);
 			}
 		}
@@ -168,10 +168,12 @@ void Game::update(SDLManager &manager) {
 		//Quit Game if Player Hits Obstacle
 		for (int i = 0; i < pmcNetwork->getSize(); i++)
 		{
-				if (pmcNetwork->getBird(i).isTouching(mvpcObstacles.at(mbIndexNextObstacle))
-						|| pmcNetwork->getBird(i).isTouching(mvpcObstacles.at(mbIndexNextObstacle + 1)))
+				if (pmcNetwork->getBird(i)->isTouching(mvpcObstacles.at(0))
+						|| pmcNetwork->getBird(i)->isTouching(mvpcObstacles.at(1))
+					  || pmcNetwork->getBird(i)->isTouching(mvpcObstacles.at(2))
+					|| pmcNetwork->getBird(i)->isTouching(mvpcObstacles.at(3)))
 				{
-						pmcNetwork->getBird(i).setScore(mScore);
+						pmcNetwork->getBird(i)->setScore(mScore);
 						pmcNetwork->removeBird(i);
 			}
 		}
@@ -188,8 +190,8 @@ void Game::update(SDLManager &manager) {
 
 		//Check for score increase
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
-			if ((mvpcObstacles.at(i))->justPassed((pmcNetwork->getBird(0).getX() +
-					(pmcNetwork->getBird(0).getWidth() / 2))) &&
+			if ((mvpcObstacles.at(i))->justPassed((pmcNetwork->getBird(0)->getX() +
+					(pmcNetwork->getBird(0)->getWidth() / 2))) &&
 				dynamic_cast<TopObstacle*>(mvpcObstacles.at(i)) != NULL) {
 				mScore++;
 				mbIndexNextObstacle += 2;
@@ -203,7 +205,7 @@ void Game::update(SDLManager &manager) {
 		//Player will fall off of screen if they lose
 		for (int i = 0; i < pmcNetwork->getSize(); i++)
 		{
-			pmcNetwork->getBird(i).update();
+			pmcNetwork->getBird(i)->update();
 		}
 	}
 
@@ -243,7 +245,7 @@ void Game::render(SDLManager &manager) {
 
 	for (int i = 0; i < pmcNetwork->getSize(); i++)
 	{
-		pmcNetwork->getBird(i).render();
+		pmcNetwork->getBird(i)->render();
 	}
 
 	//Render Score

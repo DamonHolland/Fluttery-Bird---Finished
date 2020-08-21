@@ -41,7 +41,7 @@ public:
 private:
 
 	double mYVel;
-	int mScore;
+	int mScore = 0;
 	static const int X_START = 100;
 	static const int Y_START = 320;
 	static const int MAX_FALL_ROTATION = 45;

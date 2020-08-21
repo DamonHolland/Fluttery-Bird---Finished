@@ -103,8 +103,8 @@ int Network::getGeneration() {
 *
 * Returned:    Player - the player object at the specified index (The Bird)
 ******************************************************************************/
-Player Network::getBird(int i) {
-		return mvBirds.at(i);
+Player* Network::getBird(int i) {
+		return &mvBirds.at(i);
 }
 
 /******************************************************************************
@@ -118,31 +118,38 @@ Player Network::getBird(int i) {
 ******************************************************************************/
 void Network::removeBird(int i)
 {
-	//Remove the bird
-	mvBirds.erase(mvBirds.begin() + i);
-	mSize--;
+	bool bIsBetter = false;
 
-	//If there is only 1 bird left, store it as the winner of it's generation if
-	//It is better than any of the best birds
-	if (mSize == 1)
+	//If this bird is a new best bird, add it to the best birds array
+	if (mvBirds.size() <= 8)
 	{
-		if (mvBestBirds.size() <= 8)
+		if (mvBestBirds.size() < 8)
 		{
-			mvBestBirds.push_back(mvBirds.at(0));
+			if (mvBirds.at(i).getScore() > 0)
+			{
+				mvBestBirds.push_back(mvBirds.at(i));
+				std::cout << "New Best Bird With Score: " <<
+										  mvBirds.at(i).getScore() << std::endl;
+			}
 		}
 		else
 		{
-			for (int i = 0; i < mvBestBirds.size(); i++)
+			for (int j = 0; j < mvBestBirds.size() && !bIsBetter; j++)
 			{
-				if (mvBirds.at(0).getScore() > mvBestBirds.at(i).getScore())
+				if (mvBirds.at(i).getScore() > mvBestBirds.at(j).getScore())
 				{
-					mvBestBirds.at(i) = mvBirds.at(0);
-					return;
+					mvBestBirds.at(j) = mvBirds.at(i);
+					bIsBetter = true;
+					std::cout << "New Bird Added" << std::endl;
 				}
 			}
-
 		}
 	}
+
+
+	//Remove the bird
+	mvBirds.erase(mvBirds.begin() + i);
+	mSize--;
 
 	return;
 }
@@ -162,8 +169,6 @@ void Network::createNewGeneration()
 	Player newBird;
 
 	mvBirds.clear();
-
-	std::cout << mvBestBirds.size() << std::endl;
 
 	//Include the best birds in the new generation
 	for (int i = 0; i < mvBestBirds.size(); i++)
