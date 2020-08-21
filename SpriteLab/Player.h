@@ -46,7 +46,7 @@ private:
 	static const int Y_START = 320;
 	static const int MAX_FALL_ROTATION = 45;
 	static const int MAX_FLY_ROTATION = -45;
-	static const int COLLISION_LEEWAY = 4;
+	static const int COLLISION_LEEWAY = 1;
 
 	static const int FLY_VEL = -10;
 	static const int MAX_VEL = 10;
