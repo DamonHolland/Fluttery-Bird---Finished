@@ -125,7 +125,9 @@ void Game::update(SDLManager &manager) {
 		mpcBackground2->update();
 
 		//Update Game Objects
-		pmcNetwork->update();
+		pmcNetwork->update(mvpcObstacles.at(0)->getX(),
+											 mvpcObstacles.at(0)->getBottomY(),
+											 mvpcObstacles.at(1)->getTopY());
 		
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
 			mvpcObstacles.at(i)->update();
@@ -151,32 +153,38 @@ void Game::update(SDLManager &manager) {
 			}
 		}
 
+		bool bRemoved = false;
+
 		//Quit Game If Player Hits Ground
-		bool bAllPlayersHit = true;
-		for (int i = 0; i < pmcNetwork->getSize(); i++)
+		for (int i = 0; i < pmcNetwork->getSize() && !bRemoved; i++)
 		{
-			if (!pmcNetwork->getBird(i).touchingGround(manager.windowHeight()))
+			if (pmcNetwork->getBird(i).touchingGround(manager.windowHeight()))
 			{
-				bAllPlayersHit = false;
+					pmcNetwork->removeBird(i);
+					bRemoved = true;
 			}
 		}
 
+		bRemoved = false;
+
 		//Quit Game if Player Hits Obstacle
-		for (int i = 0; i < pmcNetwork->getSize(); i++)
+		for (int i = 0; i < pmcNetwork->getSize() && !bRemoved; i++)
 		{
-			for (size_t j = 0; j < mvpcObstacles.size(); j++) {
+			for (size_t j = 0; j < mvpcObstacles.size() && !bRemoved; j++) {
 				if (pmcNetwork->getBird(i).isTouching(mvpcObstacles.at(j))) {
-					bAllPlayersHit = false;
+						pmcNetwork->removeBird(i);
+						bRemoved = true;
 				}
 			}
 		}
 
 		//Quit if either tests were true
-		if (bAllPlayersHit)
+		if (pmcNetwork->getSize() == 0)
 		{
 			manager.playSound("assets/die.wav", false);
 			mbGameOver = true;
 			mbIsPaused = true;
+			return;
 		}
 
 		//Check for score increase

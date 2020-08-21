@@ -26,6 +26,9 @@ const double Player::GRAVITY = 0.5;
 Player::Player() : SDLSprite(IMAGE_PATH, X_START, Y_START){
 	//Initial Velocity
 	mYVel = 0;
+
+	//Set Neural Values
+
 }
 
 /******************************************************************************
@@ -161,4 +164,85 @@ bool Player::isTouching(Obstacle* pObstacle) const {
 			&& (getX() + getWidth() - COLLISION_LEEWAY) < pObstacle->getBackX()
 			&& (getY() + getHeight() - COLLISION_LEEWAY) > pObstacle->getTopY()
 			&& (getY() + getHeight() - COLLISION_LEEWAY) < pObstacle->getBottomY());
+}
+
+/******************************************************************************
+* Function:    getVel
+*
+* Description: return the velocity of the player
+*
+* Parameters:  none
+*
+* Returned:    double - the velocity of the player
+******************************************************************************/
+double Player::getVel() const
+{
+	return mYVel;
+}
+
+/******************************************************************************
+* Function:    SetBias
+*
+* Description: Sets the bias for the node at the given index
+*
+* Parameters:  int i - the index of the node to set the value of
+*							 double v - the new bias value for the node
+* Returned:    none
+******************************************************************************/
+void Player::setBias(int i, double v)
+{
+		mNodeBiases[i] = v;
+		return;
+}
+
+/******************************************************************************
+* Function:    SetWeight
+*
+* Description: Sets the weight for the connection at the given index
+*
+* Parameters:  int i - the index of the conection to set the value of
+*							 double v - the new weight value for the connection
+* Returned:    none
+******************************************************************************/
+void Player::setWeight(int i, double v)
+{
+	mNodeWeights[i] = v;
+	return;
+}
+
+/******************************************************************************
+* Function:    getNodeOutput
+*
+* Description: Calculates the double for the output Node
+*
+* Parameters:  double inputs[4] - the array of inputs
+* Returned:    double - the output of the final node
+******************************************************************************/
+double Player::getNodeOutput(double inputs[4])
+{
+	double output;
+
+	//HiddenNodeLayer
+	double HiddenNode1 = mNodeBiases[0];
+	double HiddenNode2 = mNodeBiases[1];
+	double HiddenNode3 = mNodeBiases[2];
+
+	HiddenNode1 += (inputs[0] * mNodeWeights[0]) + (inputs[1] * mNodeWeights[3]) +
+								 (inputs[2] * mNodeWeights[6]) + (inputs[3] * mNodeWeights[9]);
+
+	HiddenNode2 += (inputs[0] * mNodeWeights[1]) + (inputs[1] * mNodeWeights[4]) +
+								 (inputs[2] * mNodeWeights[7]) + (inputs[3] * mNodeWeights[10]);
+
+	HiddenNode3 += (inputs[0] * mNodeWeights[2]) + (inputs[1] * mNodeWeights[5]) +
+								 (inputs[2] * mNodeWeights[8]) + (inputs[3] * mNodeWeights[11]);
+
+	//output Node
+	output = mNodeBiases[3];
+	
+	output += (HiddenNode1 * mNodeWeights[12]) + (HiddenNode2 * mNodeWeights[13]) +
+						(HiddenNode3 * mNodeWeights[14]);
+
+	output = tanh(output);
+
+	return output;
 }

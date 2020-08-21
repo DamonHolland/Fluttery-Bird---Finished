@@ -13,14 +13,16 @@
 class Network{
 public:
 	Network(int size);
-	void update();
+	void update(double px, double pty, double pby);
 	int getSize();
 	Player getBird(int i);
 	void createNewGeneration();
+	void removeBird(int i);
 
 
 private:
 	int mSize;
+	int mMaxSize;
 	std::vector<Player> mvBirds;
 
 };
