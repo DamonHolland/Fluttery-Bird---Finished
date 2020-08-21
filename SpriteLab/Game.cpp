@@ -90,19 +90,19 @@ void Game::handleEvents(SDLManager &manager, SDL_Event event) {
 			manager.animationStop();
 		}
 
-	//While Player has not lost
-	if (mbGameOver) {
-		if (event.type == SDL_MOUSEBUTTONDOWN) {
+	////While Player has not lost
+	//if (mbGameOver) {
+	//	if (event.type == SDL_MOUSEBUTTONDOWN) {
 
-			//Menu Button Pressed
-			if (event.button.button == SDL_BUTTON_LEFT && event.key.repeat == 0 &&
-				(event.button.x >= 522) && (event.button.x <= 627) && 
-				(event.button.y >= 397) && (event.button.y <= 433) ) {
-				mbIsRunning = false;
-				manager.playSound("assets/button.wav", false);
-			}
-		}
-	}
+	//		//Menu Button Pressed
+	//		if (event.button.button == SDL_BUTTON_LEFT && event.key.repeat == 0 &&
+	//			(event.button.x >= 522) && (event.button.x <= 627) && 
+	//			(event.button.y >= 397) && (event.button.y <= 433) ) {
+	//			mbIsRunning = false;
+	//			manager.playSound("assets/button.wav", false);
+	//		}
+	//	}
+	//}
 
 	return;
 }
@@ -125,9 +125,10 @@ void Game::update(SDLManager &manager) {
 		mpcBackground2->update();
 
 		//Update Game Objects
-		pmcNetwork->update(mvpcObstacles.at(0)->getX(),
-											 mvpcObstacles.at(0)->getBottomY(),
-											 mvpcObstacles.at(1)->getTopY());
+		double midYPos = mvpcObstacles.at(mbIndexNextObstacle)->getBottomY() -
+										((mvpcObstacles.at(mbIndexNextObstacle)->getBottomY() -
+										mvpcObstacles.at(mbIndexNextObstacle + 1)->getTopY()) / 2);
+		pmcNetwork->update(mvpcObstacles.at(mbIndexNextObstacle)->getX(), midYPos);
 		
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
 			mvpcObstacles.at(i)->update();
@@ -144,6 +145,7 @@ void Game::update(SDLManager &manager) {
 				mvpcObstacles.erase(mvpcObstacles.begin() + i);
 				delete mvpcObstacles.at(i);
 				mvpcObstacles.erase(mvpcObstacles.begin() + i);
+				mbIndexNextObstacle -= 2;
 
 				//Create the new pipes
 				int pipeLevel = (rand() % 3) + 1;
@@ -153,47 +155,44 @@ void Game::update(SDLManager &manager) {
 			}
 		}
 
-		bool bRemoved = false;
-
 		//Quit Game If Player Hits Ground
-		for (int i = 0; i < pmcNetwork->getSize() && !bRemoved; i++)
+		for (int i = 0; i < pmcNetwork->getSize(); i++)
 		{
 			if (pmcNetwork->getBird(i).touchingGround(manager.windowHeight()))
 			{
+					pmcNetwork->getBird(i).setScore(mScore);
 					pmcNetwork->removeBird(i);
-					bRemoved = true;
 			}
 		}
-
-		bRemoved = false;
 
 		//Quit Game if Player Hits Obstacle
-		for (int i = 0; i < pmcNetwork->getSize() && !bRemoved; i++)
+		for (int i = 0; i < pmcNetwork->getSize(); i++)
 		{
-			for (size_t j = 0; j < mvpcObstacles.size() && !bRemoved; j++) {
-				if (pmcNetwork->getBird(i).isTouching(mvpcObstacles.at(j))) {
+				if (pmcNetwork->getBird(i).isTouching(mvpcObstacles.at(mbIndexNextObstacle))
+						|| pmcNetwork->getBird(i).isTouching(mvpcObstacles.at(mbIndexNextObstacle + 1)))
+				{
+						pmcNetwork->getBird(i).setScore(mScore);
 						pmcNetwork->removeBird(i);
-						bRemoved = true;
-				}
 			}
 		}
 
-		//Quit if either tests were true
+		//Quit if there are no birds left
 		if (pmcNetwork->getSize() == 0)
 		{
 			manager.playSound("assets/die.wav", false);
 			mbGameOver = true;
 			mbIsPaused = true;
+			mbIsRunning = false;
 			return;
 		}
 
 		//Check for score increase
-		//ONLY CHECKS FIRST BIRD, CHANGE LATER
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
-			if ((mvpcObstacles.at(i))->isPassed((pmcNetwork->getBird(0).getX() +
+			if ((mvpcObstacles.at(i))->justPassed((pmcNetwork->getBird(0).getX() +
 					(pmcNetwork->getBird(0).getWidth() / 2))) &&
 				dynamic_cast<TopObstacle*>(mvpcObstacles.at(i)) != NULL) {
 				mScore++;
+				mbIndexNextObstacle += 2;
 				manager.playSound("assets/score.wav", false);
 			};
 			//Checks if an obstacle is passed and if it's a TopObstacle 
@@ -231,10 +230,10 @@ void Game::render(SDLManager &manager) {
 	mpcBackground2->draw();
 
 
-	//Render the Click to Start Sprite
-	if (mbIsPaused && !mbGameOver) {
-		mpcClick->draw();
-	}
+	////Render the Click to Start Sprite
+	//if (mbIsPaused && !mbGameOver) {
+	//	mpcClick->draw();
+	//}
 
 	//Render Game Objects
 
@@ -249,23 +248,26 @@ void Game::render(SDLManager &manager) {
 
 	//Render Score
 	manager.displayText(480, 0, std::to_string(mScore), Color::WHITE, 2);
+	manager.displayText(20, 0, "Generation: " +
+											std::to_string(pmcNetwork->getGeneration()),
+											Color::WHITE, 1);
 
-	//Draw Game Over Menu
-	if (mbGameOver) {
-		mpcGameOverMenu->draw();
-		//Draw the score and best score
-		manager.displayText(345, 380, std::to_string(mScore), Color::BLACK, 2);
-		//If Score was beter than current best, set new best
-		if (mScore > mBestScore) {
-			mBestScore = mScore;
-			mbNewHighScore = true;
-		}
-		//Render the New High Score Sprite if the player beat their high score
-		if (mbNewHighScore) {
-			mpcNewHighScore->draw();
-		}
-		manager.displayText(445, 380, std::to_string(mBestScore), Color::BLACK, 2);
-	}
+	////Draw Game Over Menu
+	//if (mbGameOver) {
+	//	mpcGameOverMenu->draw();
+	//	//Draw the score and best score
+	//	manager.displayText(345, 380, std::to_string(mScore), Color::BLACK, 2);
+	//	//If Score was beter than current best, set new best
+	//	if (mScore > mBestScore) {
+	//		mBestScore = mScore;
+	//		mbNewHighScore = true;
+	//	}
+	//	//Render the New High Score Sprite if the player beat their high score
+	//	if (mbNewHighScore) {
+	//		mpcNewHighScore->draw();
+	//	}
+	//	manager.displayText(445, 380, std::to_string(mBestScore), Color::BLACK, 2);
+	//}
 
 	//Present Renderer
 	manager.render();

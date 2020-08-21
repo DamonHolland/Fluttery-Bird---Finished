@@ -43,7 +43,6 @@ Player::Player() : SDLSprite(IMAGE_PATH, X_START, Y_START){
 void Player::update() {
 	//-------------------Neural Network-----------------------
 
-
 	//Update position based on Y velocity
 	setY(getY() + static_cast<int>(mYVel));
 
@@ -143,27 +142,28 @@ bool Player::isTouching(Obstacle* pObstacle) const {
 		&& (getX() + COLLISION_LEEWAY) < pObstacle->getBackX()
 		&& (getY() + COLLISION_LEEWAY) > pObstacle->getTopY()
 		&& (getY() + COLLISION_LEEWAY) < pObstacle->getBottomY())
-		
+		//Top Left//
 		||
 
 		((getX() + getWidth() - COLLISION_LEEWAY) > pObstacle->getFrontX()
 		&& (getX() + getWidth() - COLLISION_LEEWAY) < pObstacle->getBackX()
 		&& (getY() + COLLISION_LEEWAY) > pObstacle->getTopY()
 		&& (getY() + COLLISION_LEEWAY) < pObstacle->getBottomY())
-
+		//Top Right//
 		||
 
 		((getX() + COLLISION_LEEWAY) > pObstacle->getFrontX()
 			&& (getX() + COLLISION_LEEWAY) < pObstacle->getBackX()
 			&& (getY() + getHeight() - COLLISION_LEEWAY) > pObstacle->getTopY()
 			&& (getY() + getHeight() - COLLISION_LEEWAY) < pObstacle->getBottomY())
-
+		//Bottom Left
 		||
 
 		((getX() + getWidth() - COLLISION_LEEWAY) > pObstacle->getFrontX()
 			&& (getX() + getWidth() - COLLISION_LEEWAY) < pObstacle->getBackX()
 			&& (getY() + getHeight() - COLLISION_LEEWAY) > pObstacle->getTopY()
 			&& (getY() + getHeight() - COLLISION_LEEWAY) < pObstacle->getBottomY());
+		//Bottom Right
 }
 
 /******************************************************************************
@@ -178,6 +178,35 @@ bool Player::isTouching(Obstacle* pObstacle) const {
 double Player::getVel() const
 {
 	return mYVel;
+}
+
+/******************************************************************************
+* Function:    setScore
+*
+* Description: Sets the score for the player
+*
+* Parameters:  int score - the score to set
+*
+* Returned:    none
+******************************************************************************/
+void Player::setScore(int score)
+{
+	mScore = score;
+	return;
+}
+
+/******************************************************************************
+* Function:    getScore
+*
+* Description: Gets the score for the player
+*
+* Parameters:  none
+*
+* Returned:    int - the score for the player
+******************************************************************************/
+int Player::getScore() const
+{
+	return mScore;
 }
 
 /******************************************************************************
@@ -218,7 +247,7 @@ void Player::setWeight(int i, double v)
 * Parameters:  double inputs[4] - the array of inputs
 * Returned:    double - the output of the final node
 ******************************************************************************/
-double Player::getNodeOutput(double inputs[4])
+double Player::getNodeOutput(double inputs[2])
 {
 	double output;
 
@@ -227,22 +256,116 @@ double Player::getNodeOutput(double inputs[4])
 	double HiddenNode2 = mNodeBiases[1];
 	double HiddenNode3 = mNodeBiases[2];
 
-	HiddenNode1 += (inputs[0] * mNodeWeights[0]) + (inputs[1] * mNodeWeights[3]) +
-								 (inputs[2] * mNodeWeights[6]) + (inputs[3] * mNodeWeights[9]);
+	HiddenNode1 += (inputs[0] * mNodeWeights[0]) + (inputs[1] * mNodeWeights[3]);
 
-	HiddenNode2 += (inputs[0] * mNodeWeights[1]) + (inputs[1] * mNodeWeights[4]) +
-								 (inputs[2] * mNodeWeights[7]) + (inputs[3] * mNodeWeights[10]);
+	HiddenNode2 += (inputs[0] * mNodeWeights[1]) + (inputs[1] * mNodeWeights[4]);
 
-	HiddenNode3 += (inputs[0] * mNodeWeights[2]) + (inputs[1] * mNodeWeights[5]) +
-								 (inputs[2] * mNodeWeights[8]) + (inputs[3] * mNodeWeights[11]);
+	HiddenNode3 += (inputs[0] * mNodeWeights[2]) + (inputs[1] * mNodeWeights[5]);
+
+
+	//Hidden Node Activation Functions
+	HiddenNode1 = tanh(HiddenNode1);
+	HiddenNode2 = tanh(HiddenNode2);
+	HiddenNode3 = tanh(HiddenNode3);
+
 
 	//output Node
 	output = mNodeBiases[3];
 	
-	output += (HiddenNode1 * mNodeWeights[12]) + (HiddenNode2 * mNodeWeights[13]) +
-						(HiddenNode3 * mNodeWeights[14]);
+	output += (HiddenNode1 * mNodeWeights[6]) + (HiddenNode2 * mNodeWeights[7]) +
+						(HiddenNode3 * mNodeWeights[8]);
 
+	//Output Activation Function
 	output = tanh(output);
 
 	return output;
+}
+
+/******************************************************************************
+* Function:    breed
+*
+* Description: Will set the attributes of this bird to a random combination
+							 of other bird's attributes from a vector
+*
+* Parameters:  vector<Player> bestBirds - vector of the best birds
+* Returned:    none
+******************************************************************************/
+void Player::breed(std::vector<Player> bestBirds)
+{
+	std::vector<Player> vBestBirds = bestBirds;
+	//Fill the best birds vector with random birds, if there are not at least 8
+	while (vBestBirds.size() < 8)
+	{
+		Player newBird;
+		newBird.randomize();
+		vBestBirds.push_back(newBird);
+	}
+
+	for (int i = 0; i < 4; i++)
+	{
+		int random = rand() % 8;
+		mNodeBiases[i] = vBestBirds.at(random).mNodeBiases[i];
+	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		int random = rand() % 8;
+		mNodeWeights[i] = vBestBirds.at(random).mNodeWeights[i];
+	}
+	
+	return;
+}
+
+/******************************************************************************
+* Function:    mutate
+*
+* Description: Will mutate the attributes of the bird by a certain amount
+*
+* Parameters:  int rate - the amount to mutate by, random between 0 - rate
+* Returned:    none
+******************************************************************************/
+void Player::mutate(int rate)
+{
+	//Randomly Mutate Biases
+	for (int i = 0; i < 4; i++)
+	{
+		double mutationAmount = 1 + ((rate / 2.0) - (rand() % rate)) / 100.0;
+		mNodeBiases[i] *= mutationAmount;
+	}
+
+	//Randomly Mutate Weights
+	for (int i = 0; i < 9; i++)
+	{
+		double mutationAmount = 1 + ((rate / 2) - (rand() % rate)) / 100;
+		mNodeWeights[i] *= mutationAmount;
+	}
+	return;
+}
+
+/******************************************************************************
+* Function:    randomize
+*
+* Description: Will Randomize the attributes of the bird
+*
+* Parameters:  none
+* Returned:    none
+******************************************************************************/
+void Player::randomize()
+{
+
+	for (int i = 0; i < 4; i++)
+	{
+		double newRand = (rand() % 200) - 100;
+		newRand /= 100;
+		mNodeBiases[i] = newRand;
+	}
+
+	for (int i = 0; i < 9; i++)
+	{
+		double newRand = (rand() % 200) - 100;
+		newRand /= 100;
+		mNodeWeights[i] = newRand;
+	}
+
+	return;
 }

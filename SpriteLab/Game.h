@@ -33,6 +33,7 @@ private:
 	int pipeSpawnDistance;
 
 	int mScore, mBestScore;
+	int mbIndexNextObstacle = 0;
 	bool mbNewHighScore;
 	bool mbIsRunning;
 	bool mbIsPaused;

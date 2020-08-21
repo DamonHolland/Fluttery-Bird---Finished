@@ -13,8 +13,9 @@
 class Network{
 public:
 	Network(int size);
-	void update(double px, double pty, double pby);
+	void update(double px, double pmy);
 	int getSize();
+	int getGeneration();
 	Player getBird(int i);
 	void createNewGeneration();
 	void removeBird(int i);
@@ -23,6 +24,8 @@ public:
 private:
 	int mSize;
 	int mMaxSize;
+	int mGeneration;
 	std::vector<Player> mvBirds;
+	std::vector<Player> mvBestBirds;
 
 };

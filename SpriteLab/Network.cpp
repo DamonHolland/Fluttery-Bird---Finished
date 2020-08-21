@@ -22,25 +22,13 @@ Network::Network(int size){
 	//amount of birds;
 	mSize = size;
 	mMaxSize = size;
+	mGeneration = 1;
+
+	//Fill the network with randomized new birds
 	Player newBird;
 	for (int i = 0; i < mSize; i++)
 	{
-
-		for (int j = 0; j < 4; j++)
-		{
-			double newRand = -1000 + (rand() % 2000);
-			newRand /= 1000;
-			newBird.setBias(j, newRand);
-		}
-
-		for (int j = 0; j < 15; j++)
-		{
-			double newRand = 1 + (rand() % 1000);
-			newRand /= 1000;
-			newBird.setWeight(j, newRand);
-		}
-
-
+		newBird.randomize();
 		mvBirds.push_back(newBird);
 	}
 
@@ -55,9 +43,9 @@ Network::Network(int size){
 *
 * Returned:    none
 ******************************************************************************/
-void Network::update(double px, double pty, double pby) {
+void Network::update(double px, double pmy) {
 
-	double inputValues[4] = {1.0, 0.5, -1.0, -0.5};
+	double inputValues[2];
 
 	for (int i = 0; i < mSize; i++)
 	{
@@ -68,20 +56,14 @@ void Network::update(double px, double pty, double pby) {
 	for (int i = 0; i < mSize; i++)
 	{
 		//Set Input Values
-		inputValues[0] = mvBirds.at(i).getVel() / 10;
-		//CHANGE THIS TO BE BASED ON NEXT OBSTACLE, NOT FIRST
-		inputValues[1] = (abs(mvBirds.at(i).getX() - px) - 300) / 300;
-		inputValues[2] = (abs(pty - mvBirds.at(i).getY()) - 360) / 360;
-		inputValues[3] = (abs(pby - mvBirds.at(i).getY()) - 360) / 360;
-
+		inputValues[0] = ((mvBirds.at(i).getX() - px) + 250) / 250;
+		inputValues[1] = (mvBirds.at(i).getY() - pmy) / 560;
 
 		if (mvBirds.at(i).getNodeOutput(inputValues) >= 0.5)
 		{
 			mvBirds.at(i).fly();
 		}
-
 	}
-
 
 	return;
 }
@@ -97,6 +79,19 @@ void Network::update(double px, double pty, double pby) {
 ******************************************************************************/
 int Network::getSize() {
 	return mSize;
+}
+
+/******************************************************************************
+* Function:    getGeneration
+*
+* Description: returns the generation of the network
+*
+* Parameters:  none
+*
+* Returned:    int - the generation of the network
+******************************************************************************/
+int Network::getGeneration() {
+	return mGeneration;
 }
 
 /******************************************************************************
@@ -123,8 +118,32 @@ Player Network::getBird(int i) {
 ******************************************************************************/
 void Network::removeBird(int i)
 {
+	//Remove the bird
 	mvBirds.erase(mvBirds.begin() + i);
 	mSize--;
+
+	//If there is only 1 bird left, store it as the winner of it's generation if
+	//It is better than any of the best birds
+	if (mSize == 1)
+	{
+		if (mvBestBirds.size() <= 8)
+		{
+			mvBestBirds.push_back(mvBirds.at(0));
+		}
+		else
+		{
+			for (int i = 0; i < mvBestBirds.size(); i++)
+			{
+				if (mvBirds.at(0).getScore() > mvBestBirds.at(i).getScore())
+				{
+					mvBestBirds.at(i) = mvBirds.at(0);
+					return;
+				}
+			}
+
+		}
+	}
+
 	return;
 }
 
@@ -144,27 +163,25 @@ void Network::createNewGeneration()
 
 	mvBirds.clear();
 
-	for (int i = 0; i < mMaxSize; i++)
+	std::cout << mvBestBirds.size() << std::endl;
+
+	//Include the best birds in the new generation
+	for (int i = 0; i < mvBestBirds.size(); i++)
 	{
+		mvBirds.push_back(mvBestBirds.at(i));
+		mSize++;
+	}
 
-		for (int j = 0; j < 4; j++)
-		{
-			double newRand = -1000 + (rand() % 2000);
-			newRand /= 1000;
-			newBird.setBias(j, newRand);
-		}
-
-		for (int j = 0; j < 15; j++)
-		{
-			double newRand = 1 + (rand() % 1000);
-			newRand /= 1000;
-			newBird.setWeight(j, newRand);
-		}
-
-
+	//Add new birds, breeded from the best
+	for (int i = 0; i < mMaxSize - mvBestBirds.size(); i++)
+	{
+		newBird.breed(mvBestBirds);
+		newBird.mutate(10);
 		mvBirds.push_back(newBird);
 		mSize++;
 	}
+
+	mGeneration++;
 
 	return;
 }

@@ -120,7 +120,7 @@ bool Obstacle::isOOB(int windowMin){
 }
 
 /******************************************************************************
-* Function:    isPassed
+* Function:    justPassed
 *
 * Description: has the obstacle just been passed by the player?
 *
@@ -128,10 +128,17 @@ bool Obstacle::isOOB(int windowMin){
 *
 * Returned:    bool - has the obstacle just been passed by the player?
 ******************************************************************************/
-bool Obstacle::isPassed(const int checkX) {
-	bool bPassed = ((getBackX() - (getWidth() / 2)) <= checkX && !mbChecked);
-	if (bPassed) {
-		mbChecked = true;
+bool Obstacle::justPassed(const int checkX) {
+	bool bJustPassed = false;
+
+	if (!mbPassed)
+	{
+		if ((getBackX() - (getWidth() / 2)) <= checkX)
+		{
+			bJustPassed = true;
+			mbPassed = true;
+		}
 	}
-	return bPassed;
+
+	return bJustPassed;
 }

@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
 	rcManager.render();
 
 	//Create the Neural Network Object
-	Network cTheNetwork(20);
+	Network cTheNetwork(50);
 
 	while (!bGameStarted) {
 

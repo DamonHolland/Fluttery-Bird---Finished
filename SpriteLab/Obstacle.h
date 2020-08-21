@@ -25,11 +25,11 @@ class Obstacle : public SDLSprite{
   
     bool isOOB(int windowMin = 0);
 
-		bool isPassed(const int checkX);
+		bool justPassed(const int checkX);
   
   private:
 
     static const int X_VEL = 4;
-		bool mbChecked = false;
+		bool mbPassed = false;
 
 };
