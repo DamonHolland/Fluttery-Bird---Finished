@@ -333,15 +333,23 @@ void Player::mutate(int rate)
 	//Randomly Mutate Biases
 	for (int i = 0; i < m_BIAS_SIZE; i++)
 	{
-		double mutationAmount = 1 + ((rate / 2.0) - (rand() % rate)) / 100.0;
-		mNodeBiases[i] *= mutationAmount;
+		if (rand() % rate == 0)
+		{
+			double newRand = (rand() % 200) - 100;
+			newRand /= 100;
+			mNodeBiases[i] = newRand;
+		}
 	}
 
 	//Randomly Mutate Weights
 	for (int i = 0; i < m_WEIGHT_SIZE; i++)
 	{
-		double mutationAmount = 1 + ((rate / 2) - (rand() % rate)) / 100;
-		mNodeWeights[i] *= mutationAmount;
+		if (rand() % rate == 0)
+		{
+			double newRand = (rand() % 200) - 100;
+			newRand /= 100;
+			mNodeWeights[i] = newRand;
+		}
 	}
 	return;
 }

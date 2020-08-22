@@ -55,9 +55,12 @@ void Network::update(double px, double pmy) {
 	//Calculate the output node for the network for each bird
 	for (int i = 0; i < mSize; i++)
 	{
-		//Set Input Values
-		inputValues[0] = ((mvBirds.at(i).getX() - px) + 250) / 250;
-		inputValues[1] = (mvBirds.at(i).getY() - pmy) / 560;
+		//Set Input Values NORMALIZED
+		//inputValues[0] = ((mvBirds.at(i).getX() - px) + 250) / 250;
+		//inputValues[1] = (mvBirds.at(i).getY() - pmy) / 560;
+
+		inputValues[0] = (mvBirds.at(i).getX() - px);
+		inputValues[1] = (mvBirds.at(i).getY() - pmy);
 
 		if (mvBirds.at(i).getNodeOutput(inputValues) >= 0.5)
 		{
