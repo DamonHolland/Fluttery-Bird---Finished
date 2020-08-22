@@ -121,8 +121,6 @@ Player* Network::getBird(int i) {
 ******************************************************************************/
 void Network::removeBird(int i)
 {
-	bool bIsBetter = false;
-
 	//If this bird is a new best bird, add it to the best birds array
 	if (mvBirds.size() <= 8)
 	{
@@ -133,19 +131,31 @@ void Network::removeBird(int i)
 				mvBestBirds.push_back(mvBirds.at(i));
 				std::cout << "New Best Bird With Score: " <<
 										  mvBirds.at(i).getScore() << std::endl;
+				printBestBirds();
 			}
 		}
 		else
 		{
-			for (int j = 0; j < mvBestBirds.size() && !bIsBetter; j++)
+			//Find the worst bird in the array
+			int lowestIndex = 0, lowestScore = mvBestBirds.at(0).getScore();
+
+			for (int j = 0; j < mvBestBirds.size(); j++)
 			{
-				if (mvBirds.at(i).getScore() > mvBestBirds.at(j).getScore())
+				if (mvBestBirds.at(j).getScore() < lowestScore)
 				{
-					mvBestBirds.at(j) = mvBirds.at(i);
-					bIsBetter = true;
-					std::cout << "New Bird Added" << std::endl;
+					lowestScore = mvBestBirds.at(j).getScore();
+					lowestIndex = j;
 				}
 			}
+			//Replace that bird with new bird if the new bird is better
+			if (mvBirds.at(i).getScore() > lowestScore)
+			{
+				mvBestBirds.at(lowestIndex) = mvBirds.at(i);
+				std::cout << "New Best Bird With Score: " <<
+				mvBirds.at(i).getScore() << std::endl;
+				printBestBirds();
+			}
+
 		}
 	}
 
