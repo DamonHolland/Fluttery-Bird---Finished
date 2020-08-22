@@ -255,7 +255,7 @@ void Player::setWeight(int i, double v)
 * Parameters:  double inputs[4] - the array of inputs
 * Returned:    double - the output of the final node
 ******************************************************************************/
-double Player::getNodeOutput(double inputs[2])
+double Player::getNodeOutput(std::vector<double> inputs)
 {
 	double output;
 
@@ -269,8 +269,10 @@ double Player::getNodeOutput(double inputs[2])
 
 	for (int i = 0; i < m_BIAS_SIZE - 1; i++)
 	{
-		hiddenNodes.at(i) += (inputs[0] * mNodeWeights[0])
-											 + (inputs[1] * mNodeWeights[m_BIAS_SIZE - 1]);
+		for (int j = 0; j < inputs.size(); j++)
+		{
+			hiddenNodes.at(i) += inputs[j] * mNodeWeights[(m_BIAS_SIZE - 1) * j];
+		}
 
 		//Hidden Node Activation Function
 

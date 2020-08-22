@@ -192,11 +192,19 @@ void Game::update(SDLManager &manager) {
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
 			if ((mvpcObstacles.at(i))->justPassed((pmcNetwork->getBird(0)->getX() +
 					(pmcNetwork->getBird(0)->getWidth() / 2))) &&
-				dynamic_cast<TopObstacle*>(mvpcObstacles.at(i)) != NULL) {
+				dynamic_cast<TopObstacle*>(mvpcObstacles.at(i)) != NULL)
+			{
 				mScore++;
-				mbIndexNextObstacle += 2;
 				manager.playSound("assets/score.wav", false);
-			};
+			}
+
+			if ((mvpcObstacles.at(i))->justCleared((pmcNetwork->getBird(0)->getX() +
+				(pmcNetwork->getBird(0)->getWidth() / 2))) &&
+				dynamic_cast<TopObstacle*>(mvpcObstacles.at(i)) != NULL)
+			{
+				mbIndexNextObstacle += 2;
+			}
+			
 			//Checks if an obstacle is passed and if it's a TopObstacle 
 			//(to prevent doublecounting)
 		}
@@ -250,8 +258,11 @@ void Game::render(SDLManager &manager) {
 
 	//Render Score
 	manager.displayText(480, 0, std::to_string(mScore), Color::WHITE, 2);
-	manager.displayText(20, 0, "Generation: " +
+	manager.displayText(570, 0, "Generation: " +
 											std::to_string(pmcNetwork->getGeneration()),
+											Color::WHITE, 1);
+	manager.displayText(570, 30, "Birds Remaining: " +
+											std::to_string(pmcNetwork->getSize()),
 											Color::WHITE, 1);
 
 	////Draw Game Over Menu

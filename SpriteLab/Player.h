@@ -25,7 +25,7 @@ public:
 	int getScore() const;
 	void setBias(int i, double v);
 	void setWeight(int i, double v);
-	double getNodeOutput(double inputs[2]);
+	double getNodeOutput(std::vector<double> inputs);
 	void breed(std::vector<Player> bestBirds);
 	void mutate(int rate);
 	void randomize();

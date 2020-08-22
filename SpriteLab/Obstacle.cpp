@@ -142,3 +142,27 @@ bool Obstacle::justPassed(const int checkX) {
 
 	return bJustPassed;
 }
+
+/******************************************************************************
+* Function:    justCleared
+*
+* Description: has the obstacle just been cleared by the player?
+*
+* Parameters:  const int - X position of the player to check
+*
+* Returned:    bool - has the obstacle just been cleared by the player?
+******************************************************************************/
+bool Obstacle::justCleared(const int checkX) {
+	bool bJustCleared = false;
+
+	if (!mbCleared)
+	{
+		if ((getBackX()) <= checkX)
+		{
+			bJustCleared = true;
+			mbCleared = true;
+		}
+	}
+
+	return bJustCleared;
+}

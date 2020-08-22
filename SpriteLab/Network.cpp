@@ -45,7 +45,7 @@ Network::Network(int size){
 ******************************************************************************/
 void Network::update(double px, double pmy) {
 
-	double inputValues[2];
+	std::vector<double> inputValues;
 
 	for (int i = 0; i < mSize; i++)
 	{
@@ -55,12 +55,15 @@ void Network::update(double px, double pmy) {
 	//Calculate the output node for the network for each bird
 	for (int i = 0; i < mSize; i++)
 	{
+		inputValues.clear();
+
 		//Set Input Values NORMALIZED
 		//inputValues[0] = ((mvBirds.at(i).getX() - px) + 250) / 250;
 		//inputValues[1] = (mvBirds.at(i).getY() - pmy) / 560;
 
-		inputValues[0] = (mvBirds.at(i).getX() - px);
-		inputValues[1] = (mvBirds.at(i).getY() - pmy);
+		inputValues.push_back(mvBirds.at(i).getX() - px);
+		inputValues.push_back(mvBirds.at(i).getY() - pmy);
+		inputValues.push_back(mvBirds.at(i).getHeight());
 
 		if (mvBirds.at(i).getNodeOutput(inputValues) >= 0.5)
 		{
@@ -194,7 +197,7 @@ void Network::createNewGeneration()
 	for (int i = 0; i < mMaxSize - mvBestBirds.size(); i++)
 	{
 		newBird.breed(mvBestBirds);
-		newBird.mutate(10);
+		newBird.mutate(20);
 		mvBirds.push_back(newBird);
 		mSize++;
 	}
