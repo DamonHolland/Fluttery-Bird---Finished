@@ -252,28 +252,32 @@ double Player::getNodeOutput(double inputs[2])
 	double output;
 
 	//HiddenNodeLayer
-	double HiddenNode1 = mNodeBiases[0];
-	double HiddenNode2 = mNodeBiases[1];
-	double HiddenNode3 = mNodeBiases[2];
+	std::vector<double> hiddenNodes;
 
-	HiddenNode1 += (inputs[0] * mNodeWeights[0]) + (inputs[1] * mNodeWeights[3]);
+	for (int i = 0; i < m_BIAS_SIZE - 1; i++)
+	{
+		hiddenNodes.push_back(mNodeBiases[i]);
+	}
 
-	HiddenNode2 += (inputs[0] * mNodeWeights[1]) + (inputs[1] * mNodeWeights[4]);
+	for (int i = 0; i < m_BIAS_SIZE - 1; i++)
+	{
+		hiddenNodes.at(i) += (inputs[0] * mNodeWeights[0])
+											 + (inputs[1] * mNodeWeights[m_BIAS_SIZE - 1]);
 
-	HiddenNode3 += (inputs[0] * mNodeWeights[2]) + (inputs[1] * mNodeWeights[5]);
+		//Hidden Node Activation Function
 
+		hiddenNodes.at(i) = tanh(hiddenNodes.at(i));
+	}
 
-	//Hidden Node Activation Functions
-	HiddenNode1 = tanh(HiddenNode1);
-	HiddenNode2 = tanh(HiddenNode2);
-	HiddenNode3 = tanh(HiddenNode3);
 
 
 	//output Node
-	output = mNodeBiases[3];
-	
-	output += (HiddenNode1 * mNodeWeights[6]) + (HiddenNode2 * mNodeWeights[7]) +
-						(HiddenNode3 * mNodeWeights[8]);
+	output = mNodeBiases[m_BIAS_SIZE - 1];
+
+	for (int i = 0; i < m_BIAS_SIZE - 1; i++)
+	{
+		output += (hiddenNodes.at(i) * mNodeWeights[(m_BIAS_SIZE - 1) + i + 1]);
+	}
 
 	//Output Activation Function
 	output = tanh(output);
@@ -301,13 +305,13 @@ void Player::breed(std::vector<Player> bestBirds)
 		vBestBirds.push_back(newBird);
 	}
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < m_BIAS_SIZE; i++)
 	{
 		int random = rand() % 8;
 		mNodeBiases[i] = vBestBirds.at(random).mNodeBiases[i];
 	}
 
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < m_WEIGHT_SIZE; i++)
 	{
 		int random = rand() % 8;
 		mNodeWeights[i] = vBestBirds.at(random).mNodeWeights[i];
@@ -327,14 +331,14 @@ void Player::breed(std::vector<Player> bestBirds)
 void Player::mutate(int rate)
 {
 	//Randomly Mutate Biases
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < m_BIAS_SIZE; i++)
 	{
 		double mutationAmount = 1 + ((rate / 2.0) - (rand() % rate)) / 100.0;
 		mNodeBiases[i] *= mutationAmount;
 	}
 
 	//Randomly Mutate Weights
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < m_WEIGHT_SIZE; i++)
 	{
 		double mutationAmount = 1 + ((rate / 2) - (rand() % rate)) / 100;
 		mNodeWeights[i] *= mutationAmount;
@@ -353,14 +357,14 @@ void Player::mutate(int rate)
 void Player::randomize()
 {
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < m_BIAS_SIZE; i++)
 	{
 		double newRand = (rand() % 200) - 100;
 		newRand /= 100;
 		mNodeBiases[i] = newRand;
 	}
 
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < m_WEIGHT_SIZE; i++)
 	{
 		double newRand = (rand() % 200) - 100;
 		newRand /= 100;
