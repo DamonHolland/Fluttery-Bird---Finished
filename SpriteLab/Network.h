@@ -19,6 +19,7 @@ public:
 	Player* getBird(int i);
 	void createNewGeneration();
 	void removeBird(int i);
+	void printBestBirds();
 
 
 private:

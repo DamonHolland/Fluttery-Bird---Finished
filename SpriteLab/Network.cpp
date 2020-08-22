@@ -193,3 +193,23 @@ void Network::createNewGeneration()
 
 	return;
 }
+
+/******************************************************************************
+* Function:    printBestBirds
+*
+* Description: Generates a new generation of birds
+*
+* Parameters:  none
+*
+* Returned:    none
+******************************************************************************/
+void Network::printBestBirds()
+{
+	std::cout << "Best Birds: ";
+	for (int i = 0; i < mvBestBirds.size(); i++)
+	{
+		std::cout << mvBestBirds.at(i).getScore() << " ";
+	}
+	std::cout << std::endl;
+	return;
+}

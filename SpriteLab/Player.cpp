@@ -28,7 +28,15 @@ Player::Player() : SDLSprite(IMAGE_PATH, X_START, Y_START){
 	mYVel = 0;
 
 	//Set Neural Values
+	for (int i = 0; i < m_BIAS_SIZE; i++)
+	{
+		mNodeBiases.push_back(0.01);
+	}
 
+	for (int i = 0; i < m_WEIGHT_SIZE; i++)
+	{
+		mNodeWeights.push_back(0.01);
+	}
 }
 
 /******************************************************************************

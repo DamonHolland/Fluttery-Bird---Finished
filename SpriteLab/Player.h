@@ -31,13 +31,13 @@ public:
 	void randomize();
 
 	//Neural Network Information *****************************************
-	//First 3 biases are hidden layer nodes, last value is the output node
+	//First biases are hidden layer nodes, last value is the output node
 	std::vector<double> mNodeBiases;
-	const int m_BIAS_SIZE = 10;
-	//First 6 weights are connections from input nodes to hidden layer nodes
-	//Last 3 weights are connections from hidden layer nodes to output nodes
+	int m_BIAS_SIZE = 10;
+	//First weights are connections from input nodes to hidden layer nodes
+	//Last weights are connections from hidden layer nodes to output nodes
 	std::vector<double> mNodeWeights;
-	const int m_WEIGHT_SIZE = 36;
+	int m_WEIGHT_SIZE = 36;
 	//********************************************************************
 
 private:
