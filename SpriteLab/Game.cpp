@@ -39,7 +39,7 @@ Game::Game(int windowW, int bestScore, Network* network) {
 	TopObstacle tempObstacle;
 	//Calculate distance between initially created pipes
 	pipeSpawnDistance = (mWindowWidth / NUM_PIPES) +
-		(tempObstacle.getWidth() / NUM_PIPES);
+		(tempObstacle.getWidth() / NUM_PIPES) ;
 
 	//Generate initial pipes
 	for (int i = 0; i < NUM_PIPES; i++) {
@@ -125,10 +125,15 @@ void Game::update(SDLManager &manager) {
 		mpcBackground2->update();
 
 		//Update Game Objects
+	
+		//Update Network ------------------------------------------------------
 		double midYPos = mvpcObstacles.at(mbIndexNextObstacle)->getBottomY() -
 										((mvpcObstacles.at(mbIndexNextObstacle)->getBottomY() -
 										mvpcObstacles.at(mbIndexNextObstacle + 1)->getTopY()) / 2);
+
 		pmcNetwork->update(mvpcObstacles.at(mbIndexNextObstacle)->getX(), midYPos);
+
+		//--------------------------------------------------------------------
 		
 		for (size_t i = 0; i < mvpcObstacles.size(); i++) {
 			mvpcObstacles.at(i)->update();
@@ -258,10 +263,10 @@ void Game::render(SDLManager &manager) {
 
 	//Render Score
 	manager.displayText(480, 0, std::to_string(mScore), Color::WHITE, 2);
-	manager.displayText(570, 0, "Generation: " +
+	manager.displayText(550, 650, "Generation: " +
 											std::to_string(pmcNetwork->getGeneration()),
 											Color::WHITE, 1);
-	manager.displayText(570, 30, "Birds Remaining: " +
+	manager.displayText(550, 680, "Birds Remaining: " +
 											std::to_string(pmcNetwork->getSize()),
 											Color::WHITE, 1);
 

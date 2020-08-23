@@ -11,7 +11,7 @@
 #include <iostream>
 
 const std::string Player::IMAGE_PATH = "assets\\bird.png";
-const double Player::GRAVITY = 0.5;
+const double Player::GRAVITY = 0.7;
 
 /******************************************************************************
 * Function:    Player
@@ -269,13 +269,12 @@ double Player::getNodeOutput(std::vector<double> inputs)
 
 	for (int i = 0; i < m_BIAS_SIZE - 1; i++)
 	{
-		for (int j = 0; j < inputs.size(); j++)
+		for (size_t j = 0; j < inputs.size(); j++)
 		{
 			hiddenNodes.at(i) += inputs[j] * mNodeWeights[(m_BIAS_SIZE - 1) * j];
 		}
 
 		//Hidden Node Activation Function
-
 		hiddenNodes.at(i) = tanh(hiddenNodes.at(i));
 	}
 
@@ -336,6 +335,7 @@ void Player::breed(std::vector<Player> bestBirds)
 * Description: Will mutate the attributes of the bird by a certain amount
 *
 * Parameters:  int rate - the amount to mutate by, random between 0 - rate
+							 double amount - the amount to mutate by between 0 - amount
 * Returned:    none
 ******************************************************************************/
 void Player::mutate(int rate)
@@ -347,7 +347,7 @@ void Player::mutate(int rate)
 		{
 			double newRand = (rand() % 200) - 100;
 			newRand /= 100;
-			mNodeBiases[i] = newRand;
+			mNodeBiases[i] += newRand;
 		}
 	}
 
@@ -358,7 +358,7 @@ void Player::mutate(int rate)
 		{
 			double newRand = (rand() % 200) - 100;
 			newRand /= 100;
-			mNodeWeights[i] = newRand;
+			mNodeWeights[i] += newRand;
 		}
 	}
 	return;

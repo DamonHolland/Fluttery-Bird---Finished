@@ -66,7 +66,7 @@ int main (int argc, char *argv[])
 	rcManager.render();
 
 	//Create the Neural Network Object
-	Network cTheNetwork(50);
+	Network cTheNetwork(30);
 
 	while (!bGameStarted) {
 
@@ -95,6 +95,9 @@ int main (int argc, char *argv[])
   //Loop for all game instances
 	while (rcManager.animationIsRunning())
 	{
+
+		rcManager.setFPS(0);
+
 		//Create new game object
 		pcGame = new Game(rcManager.windowWidth(), bestScore, &cTheNetwork);
 

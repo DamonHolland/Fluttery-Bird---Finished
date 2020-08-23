@@ -33,11 +33,11 @@ public:
 	//Neural Network Information *****************************************
 	//First biases are hidden layer nodes, last value is the output node
 	std::vector<double> mNodeBiases;
-	int m_BIAS_SIZE = 10;
+	int m_BIAS_SIZE = 4;
 	//First weights are connections from input nodes to hidden layer nodes
 	//Last weights are connections from hidden layer nodes to output nodes
 	std::vector<double> mNodeWeights;
-	int m_WEIGHT_SIZE = 36;
+	int m_WEIGHT_SIZE = 12;
 	//********************************************************************
 
 private:
@@ -51,7 +51,7 @@ private:
 	static const int COLLISION_LEEWAY = 1;
 
 	static const int FLY_VEL = -10;
-	static const int MAX_VEL = 10;
+	static const int MAX_VEL = 15;
 	static const double GRAVITY;
 
 	static const std::string IMAGE_PATH;

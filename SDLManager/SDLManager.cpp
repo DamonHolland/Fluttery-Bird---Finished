@@ -470,7 +470,10 @@ bool SDLManager::animationIsRunning ()
 	return mbIsAnimating;
 }
 
-
+void SDLManager::setFPS(int newfps)
+{
+	mFPS = newfps;
+}
 
 /*******************************************************************************
 * Method:      getSDLEventPtr

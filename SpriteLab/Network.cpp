@@ -61,9 +61,9 @@ void Network::update(double px, double pmy) {
 		//inputValues[0] = ((mvBirds.at(i).getX() - px) + 250) / 250;
 		//inputValues[1] = (mvBirds.at(i).getY() - pmy) / 560;
 
-		inputValues.push_back(mvBirds.at(i).getX() - px);
-		inputValues.push_back(mvBirds.at(i).getY() - pmy);
-		inputValues.push_back(mvBirds.at(i).getHeight());
+		inputValues.push_back(px - mvBirds.at(i).getX());
+		inputValues.push_back(pmy);
+		inputValues.push_back(mvBirds.at(i).getY());
 
 		if (mvBirds.at(i).getNodeOutput(inputValues) >= 0.5)
 		{
@@ -142,7 +142,7 @@ void Network::removeBird(int i)
 			//Find the worst bird in the array
 			int lowestIndex = 0, lowestScore = mvBestBirds.at(0).getScore();
 
-			for (int j = 0; j < mvBestBirds.size(); j++)
+			for (size_t j = 0; j < mvBestBirds.size(); j++)
 			{
 				if (mvBestBirds.at(j).getScore() < lowestScore)
 				{
@@ -187,17 +187,17 @@ void Network::createNewGeneration()
 	mvBirds.clear();
 
 	//Include the best birds in the new generation
-	for (int i = 0; i < mvBestBirds.size(); i++)
+	for (size_t i = 0; i < mvBestBirds.size(); i++)
 	{
 		mvBirds.push_back(mvBestBirds.at(i));
 		mSize++;
 	}
 
 	//Add new birds, breeded from the best
-	for (int i = 0; i < mMaxSize - mvBestBirds.size(); i++)
+	for (size_t i = 0; i < mMaxSize - mvBestBirds.size(); i++)
 	{
 		newBird.breed(mvBestBirds);
-		newBird.mutate(20);
+		newBird.mutate(16);
 		mvBirds.push_back(newBird);
 		mSize++;
 	}
@@ -219,7 +219,7 @@ void Network::createNewGeneration()
 void Network::printBestBirds()
 {
 	std::cout << "Best Birds: ";
-	for (int i = 0; i < mvBestBirds.size(); i++)
+	for (size_t i = 0; i < mvBestBirds.size(); i++)
 	{
 		std::cout << mvBestBirds.at(i).getScore() << " ";
 	}

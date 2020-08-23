@@ -79,6 +79,9 @@ class SDLManager
 	void animationStart ();
 	void animationStop ();
 	bool animationIsRunning ();
+	
+	//Custom - Damon Holland
+	void setFPS(int newfps);
 
 	//****************************************************************************
 	// Text Routines
